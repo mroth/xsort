@@ -16,7 +16,7 @@ func BenchmarkSearchInts(b *testing.B) {
 		xs[i] = i
 	}
 
-	b.Run("pkgxsort", func(b *testing.B) {
+	b.Run("xsort", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			xsort.SearchInts(xs, n-1)
 		}
@@ -37,7 +37,7 @@ func BenchmarkSearchFloat64s(b *testing.B) {
 		xs[i] = float64(i)
 	}
 
-	b.Run("pkgxsort", func(b *testing.B) {
+	b.Run("xsort", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			xsort.SearchFloat64s(xs, n-1)
 		}
@@ -58,7 +58,7 @@ func BenchmarkSearchStrings(b *testing.B) {
 		xs[i] = fmt.Sprint(i)
 	}
 
-	b.Run("pkgxsort", func(b *testing.B) {
+	b.Run("xsort", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			xsort.SearchStrings(xs, fmt.Sprint(n-1))
 		}
