@@ -1,5 +1,7 @@
 # xsort
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/mroth/xsort.svg)](https://pkg.go.dev/github.com/mroth/xsort)
+
 Manually inlined versions of the "search wrappers" in the Go standard `sort`
 library (`SearchInts`, `SearchFloat64s`, `SearchStrings`), which perform up to
 80% faster. Usage is identical.
