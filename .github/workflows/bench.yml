@@ -5,18 +5,19 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         go:
-          - "1.13"
-          - "1.14"
-          - "1.15"
           - "1.16"
           - "1.17"
           - "1.18"
+          - "1.19"
+          - "1.20"
     name: Go ${{ matrix.go }} bench
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go }}
-      - run: go test -cpu=1 -bench=.
+      - run: go install golang.org/x/perf/cmd/benchstat@latest
+      - run: go test -bench=. -count=10 -cpu=1 | benchstat -col="/lib@(std xsort)" -
