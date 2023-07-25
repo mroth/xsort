@@ -13,6 +13,7 @@ jobs:
           - "1.18"
           - "1.19"
           - "1.20"
+          - "1.21.0-rc.3"
     name: Go ${{ matrix.go }} bench
     steps:
       - uses: actions/checkout@v3
