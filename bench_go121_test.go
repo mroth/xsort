@@ -1,10 +1,11 @@
-//go:build !go1.21
-// +build !go1.21
+//go:build go1.21
+// +build go1.21
 
 package xsort_test
 
 import (
 	"fmt"
+	"slices"
 	"sort"
 	"testing"
 
@@ -25,6 +26,13 @@ func BenchmarkSearchInts(b *testing.B) {
 				sort.SearchInts(xs, n-1)
 			}
 		})
+
+		b.Run("lib=slices", func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				slices.BinarySearch(xs, n-1)
+			}
+		})
+
 	}
 
 	b.Run("lib=xsort", func(b *testing.B) {
@@ -32,6 +40,7 @@ func BenchmarkSearchInts(b *testing.B) {
 			xsort.SearchInts(xs, n-1)
 		}
 	})
+
 }
 
 func BenchmarkSearchFloat64s(b *testing.B) {
@@ -44,6 +53,12 @@ func BenchmarkSearchFloat64s(b *testing.B) {
 		b.Run("lib=sort", func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
 				sort.SearchFloat64s(xs, n-1)
+			}
+		})
+
+		b.Run("lib=slices", func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				slices.BinarySearch(xs, n-1)
 			}
 		})
 	}
@@ -66,6 +81,12 @@ func BenchmarkSearchStrings(b *testing.B) {
 		b.Run("lib=sort", func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
 				sort.SearchStrings(xs, x)
+			}
+		})
+
+		b.Run("lib=slices", func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				slices.BinarySearch(xs, x)
 			}
 		})
 	}
