@@ -2,7 +2,7 @@ name: test
 on: push
 
 jobs:
-  test:
+  bench:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -23,10 +23,47 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
           cache: false
-      - run: go test -bench=. -count=6 -cpu=1 | benchstat -col="/lib" - | tee bench_results.txt
+      - run: go test -bench=. -count=6 -cpu=1 | benchstat -col="/lib" - | tee results.txt
         env:
           GOTOOLCHAIN: local
       - uses: actions/upload-artifact@v4
         with:
           name: benchresults-go${{ matrix.go }}
-          path: bench_results.txt
+          path: results.txt
+
+  summarize:
+    runs-on: ubuntu-latest
+    needs: bench
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Generate benchmark results
+        run: |
+          OUTPUT_FILE="benchmark_summary.md"
+          DIRECTORY="artifacts/benchresults-"
+          
+          # Write header
+          echo "# Benchmark results" > "$OUTPUT_FILE"
+          
+          # Collect results
+          declare -A results
+          for file in $(find artifacts/benchresults-* -type f -name "results.txt" 2>/dev/null); do
+              if [[ $file =~ artifacts/benchresults-go([0-9]+\.[0-9]+)/results.txt ]]; then
+                  results[${BASH_REMATCH[1]}]="$file"
+              fi
+          done
+          
+          # Sort versions numerically
+          for version in $(printf "%s\n" "${!results[@]}" | sort -V); do
+              echo -e "\n## Go $version\n" >> "$OUTPUT_FILE"
+              echo '```' >> "$OUTPUT_FILE"
+              cat "${results[$version]}" >> "$OUTPUT_FILE"
+              echo '```' >> "$OUTPUT_FILE"
+          done
+      - name: Display summary
+        run: cat benchmark_summary.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-summary
+          path: benchmark_summary.md
