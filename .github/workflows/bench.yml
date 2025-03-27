@@ -8,22 +8,25 @@ jobs:
       fail-fast: false
       matrix:
         go:
-          - "1.16"
-          - "1.17"
           - "1.18"
           - "1.19"
           - "1.20"
           - "1.21"
+          - "1.22"
+          - "1.23"
+          - "1.24"
     name: Go ${{ matrix.go }} bench
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v4
+      - run: go install golang.org/x/perf/cmd/benchstat@latest
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go }}
           cache: false
-      - run: go install golang.org/x/perf/cmd/benchstat@latest
       - run: go test -bench=. -count=6 -cpu=1 | benchstat -col="/lib" - | tee bench_results.txt
-      - uses: actions/upload-artifact@v3
+        env:
+          GOTOOLCHAIN: local
+      - uses: actions/upload-artifact@v4
         with:
           name: benchresults-go${{ matrix.go }}
           path: bench_results.txt
